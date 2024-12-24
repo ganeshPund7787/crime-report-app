@@ -1,6 +1,9 @@
-import { useState } from "react";
+"use client";
 
-const reportWizard = () => {
+import { useState } from "react";
+import { ReportForm } from "./ReportForm";
+
+const ReportWizard = () => {
   const [currentStep, setCurentStep] = useState(1);
   const [reportData, setReportData] = useState<any>(null);
 
@@ -13,7 +16,11 @@ const reportWizard = () => {
 
     setCurentStep((prev) => prev + 1);
   };
-  return <div className="rounded-2xl bg-zinc-900 p-9">{currentStep === 1}</div>;
+  return (
+    <div className="rounded-2xl bg-zinc-900 p-9">
+      {currentStep === 1 && <ReportForm onComplete={handleStepComplite} />}
+    </div>
+  );
 };
 
-export default reportWizard;
+export default ReportWizard;

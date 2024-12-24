@@ -1,5 +1,7 @@
 // import { ReportWizard } from "@/components/report/ReportWizard";
 
+import ReportWizard from "@/components/report/ReportWizard";
+
 export default function SubmitReport() {
   return (
     <div className="relative min-h-screen bg-black selection:bg-cyan-500/20 overflow-hidden">
@@ -41,6 +43,7 @@ export default function SubmitReport() {
 
           <div className="mt-16 bg-zinc-900/50 rounded-2xl border border-white/5 p-6">
             {/* <ReportWizard /> */}
+            <ReportWizard />
           </div>
         </div>
       </main>
