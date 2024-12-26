@@ -88,8 +88,6 @@ export function ReportForm({ onComplete }: ReportFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("It is an FormData:- ", formData);
-    return;
     setIsSubmitting(true);
 
     try {
