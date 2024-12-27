@@ -25,9 +25,8 @@ DESCRIPTION: Write a clear, concise description`;
       },
     ]);
 
-    const text = await result.response.text(); // Ensure text() is awaited
+    const text = await result.response.text(); 
 
-    // Parse the response more precisely
     const titleMatch = text.match(/TITLE:\s*(.+)/);
     const typeMatch = text.match(/TYPE:\s*(.+)/);
     const descMatch = text.match(/DESCRIPTION:\s*(.+)/);

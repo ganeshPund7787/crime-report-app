@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Report, ReportStatus, ReportType } from "@prisma/client";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -11,7 +12,11 @@ export default function Dashboard() {
   const [filter, setFilter] = useState<ReportStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<ReportType | "ALL">("ALL");
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
+  if (!session?.user) {
+    router.push("/");
+  }
   useEffect(() => {
     fetchReports();
   }, []);
@@ -75,6 +80,9 @@ export default function Dashboard() {
     );
   }
 
+  const LogOutUser = () => {
+    signOut({ callbackUrl: "/" });
+  };
   return (
     <div className="min-h-screen bg-black text-white">
       <nav className="border-b border-neutral-800 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
@@ -88,7 +96,7 @@ export default function Dashboard() {
                 {session?.user?.name || "Admin"}
               </span>
               <button
-                onClick={() => signOut()}
+                onClick={LogOutUser}
                 className="px-4 py-2 text-sm font-medium text-neutral-300 bg-neutral-900 rounded-lg hover:bg-neutral-800 border border-neutral-800 transition-all hover:border-neutral-700"
               >
                 Sign out

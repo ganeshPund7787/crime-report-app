@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     });
 
     const { password: _, ...userWithoutPassword } = user;
-
+    console.log(_);
     return NextResponse.json(userWithoutPassword, { status: 201 });
   } catch (error: any) {
     console.error("Signup error:", error);

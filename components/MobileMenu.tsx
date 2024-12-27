@@ -16,7 +16,6 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         onClick={onClose}
       />
 
-      {/* Menu content */}
       <div className="fixed right-0 top-0 h-full w-64 bg-zinc-900 p-6 shadow-xl">
         <div className="flex flex-col space-y-6">
           <div className="flex justify-end">

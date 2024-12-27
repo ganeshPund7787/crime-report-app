@@ -1,5 +1,5 @@
 "use client";
-
+// @ts-ignore
 interface ReportSubmittedProps {
   data: any;
   onComplete: (data: any) => void;

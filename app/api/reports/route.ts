@@ -1,3 +1,4 @@
+// @ts-ignore
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
@@ -16,13 +17,11 @@ export async function GET(req: Request) {
     const status = searchParams.get("status") as ReportStatus | null;
     const type = searchParams.get("type") as ReportType | null;
 
-    // Build the where clause based on filters
     const where = {
       ...(status && { status }),
       ...(type && { type }),
     };
 
-    // Add timeout and retry logic
     const reports = await Promise.race([
       prisma.report.findMany({
         where,
@@ -53,7 +52,6 @@ export async function GET(req: Request) {
   } catch (error: any) {
     console.error("Failed to fetch reports:", error);
 
-    // More specific error messages
     if (error.code === "P1001") {
       return NextResponse.json(
         { error: "Cannot connect to database. Please try again later." },
@@ -73,7 +71,6 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   } finally {
-    // Optional: Disconnect for serverless environments
     if (process.env.VERCEL) {
       await prisma.$disconnect();
     }

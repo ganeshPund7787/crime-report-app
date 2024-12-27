@@ -1,4 +1,5 @@
 "use client";
+// @ts-ignore
 
 import { useState, useCallback } from "react";
 import { LocationInput } from "./LocationInput";

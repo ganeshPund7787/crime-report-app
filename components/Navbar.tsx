@@ -2,16 +2,17 @@
 import Link from "next/link";
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
+import { useSession } from "next-auth/react";
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <>
       <nav className="fixed top-0 left-0 w-full border-b border-white/5 bg-black/60 backdrop-blur-xl z-50">
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex h-16 items-center justify-between">
-            {/* Logo and Brand */}
             <div className="flex items-center space-x-3">
               <Link href="/" className="flex items-center space-x-3">
                 <div className="size-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
@@ -35,7 +36,6 @@ export const Navbar = () => {
               </Link>
             </div>
 
-            {/* Main Navigation */}
             <div className="hidden md:flex items-center space-x-6">
               <Link
                 href="/submit-report"
@@ -55,28 +55,31 @@ export const Navbar = () => {
               >
                 How It Works
               </Link>
-              <Link
-                href="/resources"
-                className="text-sm text-zinc-400 hover:text-white transition-colors"
-              >
-                Resources
-              </Link>
+              {session?.user ? (
+                <Link
+                  href="/dashboard"
+                  className="text-sm text-zinc-400 hover:text-white transition-colors"
+                >
+                  Dashboard
+                </Link>
+              ) : null}
             </div>
 
-            {/* Emergency Button */}
             <div className="flex items-center space-x-4">
-              <Link
-                href="/contact"
-                className="hidden md:block text-sm text-zinc-400 hover:text-white transition-colors"
-              >
-                Contact
-              </Link>
+              {!session?.user?.name && (
+                <Link
+                  href="/auth/signin"
+                  className="hidden md:block text-sm text-zinc-400 hover:text-white transition-colors"
+                >
+                  Login
+                </Link>
+              )}
+
               <button className="group flex h-9 items-center gap-2 rounded-full bg-red-500/10 pl-4 pr-5 text-sm font-medium text-red-500 ring-1 ring-inset ring-red-500/20 transition-all hover:bg-red-500/20">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
                 Emergency: 911
               </button>
 
-              {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="md:hidden p-2 text-zinc-400 hover:text-white"
@@ -95,6 +98,7 @@ export const Navbar = () => {
                   />
                 </svg>
               </button>
+              
             </div>
           </div>
         </div>
