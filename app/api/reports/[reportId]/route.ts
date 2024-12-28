@@ -1,12 +1,10 @@
+import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
-
-const prisma = new PrismaClient();
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { reportId: string } }
 ) {
   try {
     const session = await getServerSession();
@@ -16,13 +14,12 @@ export async function PATCH(
 
     const { status } = await request.json();
     const report = await prisma.report.update({
-      where: { id: params.id },
+      where: { id: params.reportId },
       data: { status },
     });
 
     return NextResponse.json(report);
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       { error: "Error updating report" },
       { status: 500 }

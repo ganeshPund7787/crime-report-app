@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
@@ -6,7 +7,9 @@ import { useSession } from "next-auth/react";
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { data: session } = useSession();
+  const { data } = useSession();
+
+  console.log(data);
 
   return (
     <>
@@ -55,18 +58,25 @@ export const Navbar = () => {
               >
                 How It Works
               </Link>
-              {session?.user ? (
+              {data?.user.role === "ADMIN" ? (
                 <Link
                   href="/dashboard"
                   className="text-sm text-zinc-400 hover:text-white transition-colors"
                 >
                   Dashboard
                 </Link>
+              ) : data?.user.role === "USER" ? (
+                <Link
+                  href="/my-reports"
+                  className="text-sm text-zinc-400 hover:text-white transition-colors"
+                >
+                  My Reports
+                </Link>
               ) : null}
             </div>
 
             <div className="flex items-center space-x-4">
-              {!session?.user?.name && (
+              {!data && (
                 <Link
                   href="/auth/signin"
                   className="hidden md:block text-sm text-zinc-400 hover:text-white transition-colors"
@@ -98,11 +108,11 @@ export const Navbar = () => {
                   />
                 </svg>
               </button>
-              
             </div>
           </div>
         </div>
       </nav>
+
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}

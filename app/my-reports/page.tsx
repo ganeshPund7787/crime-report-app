@@ -2,29 +2,29 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Report, ReportStatus, ReportType } from "@prisma/client";
-import { signOut } from "next-auth/react";
+import { Report, ReportStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
-export default function Dashboard() {
+export default function UserReports() {
   const { data: session } = useSession();
   const [reports, setReports] = useState<Report[]>([]);
-  const [filter, setFilter] = useState<ReportStatus | "ALL">("ALL");
-  const [typeFilter, setTypeFilter] = useState<ReportType | "ALL">("ALL");
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  if (!session?.user) {
-    router.push("/");
-  }
   useEffect(() => {
-    fetchReports();
-  }, []);
+    if (!session?.user) {
+      router.push("/");
+      return;
+    }
+    fetchUserReports();
+  }, [session]);
 
-  const fetchReports = async () => {
+  const fetchUserReports = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/reports");
+      const response = await fetch("/api/user-reports");
+      if (!response.ok) throw new Error("Failed to fetch reports");
       const data = await response.json();
       setReports(data);
     } catch (error) {
@@ -34,34 +34,15 @@ export default function Dashboard() {
     }
   };
 
-  const updateReportStatus = async (
-    reportId: string,
-    newStatus: ReportStatus
-  ) => {
-    try {
-      const response = await fetch(`/api/reports/${reportId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-500"></div>
+      </div>
+    );
+  }
 
-      if (response.ok) {
-        fetchReports();
-      }
-    } catch (error) {
-      console.error("Error updating report:", error);
-    }
-  };
-
-  const filteredReports = reports.filter((report) => {
-    const statusMatch = filter === "ALL" || report.status === filter;
-    const typeMatch = typeFilter === "ALL" || report.type === typeFilter;
-    return statusMatch && typeMatch;
-  });
-
-   const getStatusColor = (status: ReportStatus) => {
+  const getStatusColor = (status: ReportStatus) => {
     const colors = {
       PENDING: "bg-amber-500/10 text-amber-500 border border-amber-500/20",
       IN_PROGRESS: "bg-blue-500/10 text-blue-500 border border-blue-500/20",
@@ -72,31 +53,20 @@ export default function Dashboard() {
     return colors[status];
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  const LogOutUser = () => {
-    signOut({ callbackUrl: "/" });
-  };
   return (
     <div className="min-h-screen bg-black text-white">
       <nav className="border-b border-neutral-800 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-              Admin Dashboard
+              My Reports
             </h1>
             <div className="flex items-center gap-6">
               <span className="text-neutral-400">
                 {session?.user?.name || "Admin"}
               </span>
               <button
-                onClick={LogOutUser}
+                onClick={() => signOut({ callbackUrl: "/" })}
                 className="px-4 py-2 text-sm font-medium text-neutral-300 bg-neutral-900 rounded-lg hover:bg-neutral-800 border border-neutral-800 transition-all hover:border-neutral-700"
               >
                 Sign out
@@ -108,45 +78,11 @@ export default function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex flex-wrap gap-4 items-center justify-between">
-          <div className="flex gap-4">
-            <select
-              value={filter}
-              onChange={(e) =>
-                setFilter(e.target.value as ReportStatus | "ALL")
-              }
-              className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-            >
-              <option value="ALL">All Statuses</option>
-              {Object.values(ReportStatus).map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={typeFilter}
-              onChange={(e) =>
-                setTypeFilter(e.target.value as ReportType | "ALL")
-              }
-              className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-            >
-              <option value="ALL">All Types</option>
-              {Object.values(ReportType).map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="text-neutral-400">
-            {filteredReports.length} Reports
-          </div>
+          <div className="text-neutral-400">{reports.length} Reports</div>
         </div>
 
         <div className="grid gap-4">
-          {filteredReports.map((report) => (
+          {reports.map((report) => (
             <div
               key={report.id}
               className="bg-neutral-900/50 backdrop-blur-sm rounded-xl p-6 border border-neutral-800 hover:border-neutral-700 transition-all"
@@ -196,27 +132,11 @@ export default function Dashboard() {
                     />
                   )}
                 </div>
-                <select
-                  value={report.status}
-                  onChange={(e) =>
-                    updateReportStatus(
-                      report.id,
-                      e.target.value as ReportStatus
-                    )
-                  }
-                  className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-                >
-                  {Object.values(ReportStatus).map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
               </div>
             </div>
           ))}
 
-          {filteredReports.length === 0 && (
+          {reports.length === 0 && (
             <div className="text-center py-12 text-neutral-500 bg-neutral-900/50 rounded-xl border border-neutral-800">
               No reports found matching the selected filters.
             </div>
