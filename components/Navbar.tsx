@@ -9,8 +9,6 @@ export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data } = useSession();
 
-  console.log(data);
-
   return (
     <>
       <nav className="fixed top-0 left-0 w-full border-b border-white/5 bg-black/60 backdrop-blur-xl z-50">
@@ -76,7 +74,7 @@ export const Navbar = () => {
             </div>
 
             <div className="flex items-center space-x-4">
-              {!data && (
+              {!data?.user.email && (
                 <Link
                   href="/auth/signin"
                   className="hidden md:block text-sm text-zinc-400 hover:text-white transition-colors"

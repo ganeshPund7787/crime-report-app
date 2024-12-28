@@ -1,14 +1,15 @@
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
-import { NextApiRequest, NextApiResponse } from "next";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getServerSession(req, res, authOptions);
+export async function GET(req: Request) {
+  const session = await getServerSession(authOptions);
 
   if (!session?.user.email || !session.user.id) {
     console.error("Unauthorized access - session missing required fields");
-    return res.status(401).json({ error: "Unauthorized" });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+    });
   }
 
   try {
@@ -31,9 +32,14 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
       orderBy: { createdAt: "desc" },
     });
 
-    res.status(200).json(userReports);
+    return new Response(JSON.stringify(userReports), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Error fetching reports:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+    });
   }
 }
