@@ -2,6 +2,7 @@
   "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off", // Ignore errors for 'any'
-    "@typescript-eslint/ban-ts-comment": "off" // Ignore '@ts-ignore' usage
+    "@typescript-eslint/ban-ts-comment": "off", // Ignore '@ts-ignore' usage
+    "import/no-unresolved": ["error", { "caseSensitive": true }]
   }
 }
