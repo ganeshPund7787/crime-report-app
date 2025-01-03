@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prismamain";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
         email,
         name,
         password: hashedPassword,
-        role: role as "ADMIN" | "MODERATOR" | "USER",
+        role: role as "ADMIN" | "USER",
       },
     });
 

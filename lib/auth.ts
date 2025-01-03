@@ -2,7 +2,7 @@
 // @ts-nocheck
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "./prisma";
+import prisma from "./prismamain";
 import bcrypt from "bcryptjs";
 
 export const authOptions: AuthOptions = {
